@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cotizador de Ventanas y Puertas</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+
+  <main class="contenedor">
+    <nav class="navegacion-principal" aria-label="Navegaci&oacute;n principal">
+      <button type="button" class="nav-boton activo" id="navCotizador" aria-controls="vistaCotizador" aria-current="page">
+        Cotizador
+      </button>
+      <button type="button" class="nav-boton" id="navHistorial" aria-controls="vistaHistorial">
+        Historial
+      </button>
+    </nav>
+
+    <div id="vistaCotizador" class="vista-sistema">
+    <section class="card encabezado">
+      <div>
+        <h1>Cotizador de Ventanas y Puertas</h1>
+        <p>Generador de cotizaciones en PDF</p>
+      </div>
+
+      <div class="numero-cotizacion">
+        <label>Número de cotización</label>
+        <input type="text" id="numeroCotizacion" readonly />
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Tipo de documento</h2>
+
+      <div class="selector-documento" aria-label="Tipo de documento">
+        <label class="opcion-documento">
+          <input type="radio" name="tipoDocumento" value="cotizacion" checked />
+          <span>Cotización</span>
+        </label>
+
+        <label class="opcion-documento">
+          <input type="radio" name="tipoDocumento" value="factura" />
+          <span>Factura</span>
+        </label>
+      </div>
+
+      <div class="grid datos-factura" id="datosFactura">
+        <div>
+          <label>Número de factura</label>
+          <input type="text" id="numeroFactura" placeholder="Ej: FAC-000001" />
+        </div>
+
+        <div>
+          <label>Cédula / identificación</label>
+          <input type="text" id="identificacionFactura" placeholder="Cédula del cliente" />
+        </div>
+
+        <div>
+          <label>Condición de venta</label>
+          <select id="condicionVenta">
+            <option value="Contado">Contado</option>
+            <option value="Crédito">Crédito</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Método de pago</label>
+          <input type="text" id="metodoPago" placeholder="Efectivo, SINPE, transferencia..." />
+        </div>
+
+        <div class="campo-doble">
+          <label>Dirección</label>
+          <input type="text" id="direccionFactura" placeholder="Dirección para la factura" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Datos del cliente</h2>
+
+      <div class="grid">
+        <div>
+          <label>Cliente</label>
+          <input type="text" id="cliente" placeholder="Nombre del cliente" />
+        </div>
+
+        <div>
+          <label>Teléfono</label>
+          <input type="text" id="telefono" placeholder="Teléfono" />
+        </div>
+
+        <div>
+          <label>Correo</label>
+          <input type="email" id="correo" placeholder="Correo electrónico" />
+        </div>
+
+        <div>
+          <label>Proyecto</label>
+          <input type="text" id="proyecto" placeholder="Nombre del proyecto" />
+        </div>
+
+        <div>
+          <label>Fecha</label>
+          <input type="date" id="fecha" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="titulo-tabla">
+        <h2>Detalle de productos</h2>
+      </div>
+
+      <div class="tabla-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Medidas</th>
+              <th>Unidad</th>
+              <th>Cantidad</th>
+              <th>Precio</th>
+              <th>Color aluminio</th>
+              <th>Color vidrio</th>
+              <th>Descripción</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody id="detalleCotizacion"></tbody>
+        </table>
+      </div>
+
+      <div class="acciones-tabla">
+        <button class="btn principal" onclick="agregarFila()">Agregar otro producto</button>
+      </div>
+    </section>
+
+    <section class="card resumen">
+      <div>
+        <label>Observaciones finales</label>
+        <textarea id="observaciones" rows="5" placeholder="Observaciones para la cotización..."></textarea>
+
+        <div class="campo-plazo">
+          <label for="plazoEntrega">Plazo de entrega (días hábiles)</label>
+          <input
+            type="number"
+            id="plazoEntrega"
+            min="1"
+            step="1"
+            value="8"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="totales">
+        <div class="selector-iva" aria-label="Tipo de cotización">
+          <label class="opcion-iva">
+            <input type="radio" name="opcionIVA" value="con" checked />
+            <span>Con IVA</span>
+          </label>
+
+          <label class="opcion-iva">
+            <input type="radio" name="opcionIVA" value="sin" />
+            <span>Sin IVA</span>
+          </label>
+        </div>
+
+        <p><span>Venta neta:</span> <strong id="ventaNeta">₡0.00</strong></p>
+        <p><span id="etiquetaIVA">IVA 13%:</span> <strong id="iva">₡0.00</strong></p>
+        <p class="total-final"><span>Total:</span> <strong id="totalGeneral">₡0.00</strong></p>
+
+        <div class="control-adelanto">
+          <div class="encabezado-adelanto">
+            <label for="porcentajeAdelanto">Adelanto</label>
+            <strong id="valorPorcentajeAdelanto">80%</strong>
+          </div>
+          <input
+            type="range"
+            id="porcentajeAdelanto"
+            min="0"
+            max="100"
+            step="10"
+            value="80"
+          />
+          <p><span>Monto adelanto:</span> <strong id="montoAdelanto">₡0.00</strong></p>
+          <p><span>Monto restante:</span> <strong id="montoRestante">₡0.00</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="acciones">
+      <button class="btn secundario" onclick="limpiarCotizacion()">Borrar cotización y reiniciar contador</button>
+      <button class="btn guardar" id="btnGuardarCotizacion" onclick="guardarCotizacion()">Guardar cotizaci&oacute;n</button>
+      <button class="btn principal" onclick="generarPDF()">Generar PDF</button>
+    </section>
+    </div>
+
+    <section class="card historial-card vista-sistema" id="vistaHistorial" hidden>
+      <div class="titulo-historial">
+        <div>
+          <h2>Historial de cotizaciones</h2>
+          <p>Las cotizaciones y el borrador actual se guardan en este navegador.</p>
+        </div>
+        <input type="search" id="buscarCotizacion" placeholder="Buscar por n&uacute;mero, cliente o proyecto" aria-label="Buscar cotizaciones" />
+      </div>
+      <div id="historialCotizaciones" class="historial-lista"></div>
+      <nav id="paginacionHistorial" class="paginacion-historial" aria-label="Paginaci&oacute;n del historial" hidden>
+        <button type="button" class="btn paginacion-boton" id="paginaAnterior">Anterior</button>
+        <span id="estadoPaginacion" aria-live="polite"></span>
+        <button type="button" class="btn paginacion-boton" id="paginaSiguiente">Siguiente</button>
+      </nav>
+    </section>
+  </main>
+
+  <script src="libs/jspdf.umd.min.js"></script>
+  <script src="libs/jspdf.plugin.autotable.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/calculos.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/font-arial.js"></script>
+  <script src="js/pdf.js"></script>
+</body>
+</html>
